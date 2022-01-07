@@ -49,7 +49,7 @@ ul {
 
 /* Columns */
 .drag-column {
-
+  flex: 1; /* allows each column to take up all the screen space evenly */
   margin: 0 10px;
   position: relative;
   background-color: rgba(0, 0, 0, 0.4);
