@@ -4,7 +4,7 @@ const addItemContainers = document.querySelectorAll('.add-container');
 const addItems = document.querySelectorAll('.add-item');
 // Item lists
 const listColumns = document.querySelectorAll('.drag-item-list');
-const backlogList = document.getElementById('backlog-list');
+const newTaskList = document.getElementById('newTask-list');
 const progressList = document.getElementById('progress-list');
 const completeList = document.getElementById('complete-list');
 const onHoldList = document.getElementById('on-hold-list');
@@ -13,7 +13,7 @@ const onHoldList = document.getElementById('on-hold-list');
 let updatedOnLoad = false;
 
 // Initialize arrays
-let backlogListArray = [];
+let newTaskListArray = [];
 let progressListArray = [];
 let completeListArray = [];
 let onHoldListArray = [];
@@ -25,13 +25,13 @@ let currentColumn;
 
 // Get arrays from localStorage if available, set default values if not
 function getSavedColumns() {
-  if (localStorage.getItem('backlogItems')) {
-    backlogListArray = JSON.parse(localStorage.backlogItems);
+  if (localStorage.getItem('newTaskItems')) {
+    newTaskListArray = JSON.parse(localStorage.newTaskItems);
     progressListArray = JSON.parse(localStorage.progressItems);
     completeListArray = JSON.parse(localStorage.completeItems);
     onHoldListArray = JSON.parse(localStorage.onHoldItems);
   } else {
-    backlogListArray = ['Release the course', 'Sit back and relax'];
+    newTaskListArray = ['Release the course', 'Sit back and relax'];
     progressListArray = ['Work on projects', 'Listen to music'];
     completeListArray = ['Being cool', 'Getting stuff done'];
     onHoldListArray = ['Being uncool'];
@@ -40,8 +40,8 @@ function getSavedColumns() {
 
 // Set localStorage arrays
 function updateSavedColumns() {
-  listArrays = [backlogListArray, progressListArray, completeListArray, onHoldListArray];
-  const arrayNames = ['backlog', 'progress', 'complete', 'onHold'];
+  listArrays = [newTaskListArray, progressListArray, completeListArray, onHoldListArray];
+  const arrayNames = ['newTask', 'progress', 'complete', 'onHold'];
   arrayNames.forEach((arrayName, index) => {
     localStorage.setItem(`${arrayName}Items`, JSON.stringify(listArrays[index]));
   });
@@ -69,10 +69,10 @@ function updateDOM() {
   if (!updatedOnLoad) {
     getSavedColumns();
   }
-  // Backlog column
-  backlogList.textContent = '';
-  backlogListArray.forEach((backlogItem, index) => {
-    createItemEl(backlogList, 0, backlogItem, index);
+  // newTask column
+  newTaskList.textContent = '';
+  newTaskListArray.forEach((newTaskItem, index) => {
+    createItemEl(newTaskList, 0, newTaskItem, index);
   });
   // Progress column
   progressList.textContent = '';
@@ -92,14 +92,37 @@ function updateDOM() {
   // Run getSavedColumns only once, update local storage
   updatedOnLoad = true;
   updateSavedColumns();
+}
 
+// Add new task to to column list and reset text box
+function addToColumn(column) {
+  const itemtext = addItems[column].textContent;
+  const selectedArray = listArrays[column];
+  selectedArray.push(itemtext);
+  addItems[column].textContent = '';
+  updateDOM();
+}
+
+// Show Add Item input box
+function showInputBox(column) {
+  addBtns[column].style.visibility = 'hidden';
+  saveItemBtns[column].style.display = 'flex';
+  addItemContainers[column].style.display= 'flex';
+}
+
+// Hide Item input box
+function hideInputBox(column) {
+  addBtns[column].style.visibility = 'visible';
+  saveItemBtns[column].style.display = 'none';
+  addItemContainers[column].style.display= 'none';
+  addToColumn(column);
 }
 
 // Allow arrays to reflect dragged and dropped items
 function rebuildArrays() {
-  backlogListArray = [];
-  for (let i = 0; i < backlogList.children.length; i++) {
-    backlogListArray.push(backlogList.children[i].textContent);
+  newTaskListArray = [];
+  for (let i = 0; i < newTaskList.children.length; i++) {
+    newTaskListArray.push(newTaskList.children[i].textContent);
   }
   progressListArray = [];
   for (let i = 0; i < progressList.children.length; i++) {

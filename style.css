@@ -5,9 +5,9 @@ html {
 }
 
 :root {
-  --column-1: #a2622d;
-  --column-2: #1b6161;
-  --column-3: #248224;
+  --column-1: #CD7F32;
+  --column-2: #C0C0C0;
+  --column-3: #FFD700;
   --column-4: #a22d22;
 }
 
@@ -53,14 +53,14 @@ ul {
   margin: 0 10px;
   position: relative;
   background-color: rgba(0, 0, 0, 0.4);
-  border-radius: 10px;
+  border-radius: 5px;
   overflow-x: hidden;
 }
 
-.backlog-column .header,
-.backlog-column .solid,
-.backlog-column .solid:hover,
-.backlog-column .over {
+.newTask-column .header,
+.newTask-column .solid,
+.newTask-column .solid:hover,
+.newTask-column .over {
   background-color: var(--column-1);
 }
 
@@ -111,7 +111,7 @@ ul {
 .header {
   display: flex;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: 5px;
   margin: 10px;
 }
 
@@ -190,10 +190,10 @@ ul {
 }
 
 .add-container {
-  margin: 10px;
-  padding: 5px 10px;
+  margin: 5px;
+  padding: 5px 7px;
   border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(155, 155, 155, 0.9);
   min-height: 100px;
   display: none;
 }
@@ -204,7 +204,7 @@ ul {
   height: auto;
   background-color: white;
   border-radius: 10px;
-  margin: 5px auto;
+  margin: 2px auto;
   resize: none;
   color: black;
   padding: 10px;
