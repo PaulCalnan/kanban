@@ -49,16 +49,15 @@ function updateSavedColumns() {
 
 // Create DOM Elements for each list item
 function createItemEl(columnEl, column, item, index) {
-  // console.log('columnEl:', columnEl);
-  // console.log('column:', column);
-  // console.log('item:', item);
-  // console.log('index:', index);
   // List Item
   const listEl = document.createElement('li');
   listEl.classList.add('drag-item');
   listEl.textContent = item;
   listEl.draggable = true; // Allows item to grab and drag instead of default ie highlight text
   listEl.setAttribute('ondragstart', 'drag(event)');
+  listEl.contentEditable = true;
+  listEl.id = index;
+  listEl.setAttribute('onfocusout', `updateItem(${index}, ${column})`);
   // Append
   columnEl.appendChild(listEl);
 }
@@ -77,21 +76,29 @@ function updateDOM() {
   // Progress column
   progressList.textContent = '';
   progressListArray.forEach((progressItem, index) => {
-    createItemEl(progressList, 0, progressItem, index);
+    createItemEl(progressList, 1, progressItem, index);
   });
   // Complete column
   completeList.textContent = '';
   completeListArray.forEach((completeItem, index) => {
-    createItemEl(completeList, 0, completeItem, index);
+    createItemEl(completeList, 2, completeItem, index);
   });
   // On Hold column
   onHoldList.textContent = '';
   onHoldListArray.forEach((onHoldItem, index) => {
-    createItemEl(onHoldList, 0, onHoldItem, index);
+    createItemEl(onHoldList, 3, onHoldItem, index);
   });
   // Run getSavedColumns only once, update local storage
   updatedOnLoad = true;
   updateSavedColumns();
+}
+
+// Updated item - Delete or update value
+function updateItem(id, column) {
+  const selectedArray = listArrays[column];
+  console.log(selectedArray);
+  const selectedColumnEl = listColumns[column].children;
+  console.log(selectedColumnEl[id].textContent);
 }
 
 // Add new task to to column list and reset text box
