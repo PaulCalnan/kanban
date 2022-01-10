@@ -4,10 +4,10 @@ const addItemContainers = document.querySelectorAll('.add-container');
 const addItems = document.querySelectorAll('.add-item');
 // Item lists
 const listColumns = document.querySelectorAll('.drag-item-list');
-const newTaskList = document.getElementById('newTask-list');
-const progressList = document.getElementById('progress-list');
-const completeList = document.getElementById('complete-list');
-const onHoldList = document.getElementById('on-hold-list');
+const newTaskListEl = document.getElementById('newTask-list');
+const progressListEl = document.getElementById('progress-list');
+const completeListEl = document.getElementById('complete-list');
+const onHoldListEl = document.getElementById('on-hold-list');
 
 // Items
 let updatedOnLoad = false;
@@ -21,6 +21,7 @@ let listArrays = [];
 
 // Drag functionality initialise global vars
 let draggedItem;
+let dragging = false;
 let currentColumn;
 
 // Get arrays from localStorage if available, set default values if not
@@ -47,6 +48,12 @@ function updateSavedColumns() {
   });
 }
 
+// Filter arrays to remove empty Items
+function filterArray(array) {
+  const filteredArray = array.filter(item => item !== null);
+  return filteredArray;
+}
+
 // Create DOM Elements for each list item
 function createItemEl(columnEl, column, item, index) {
   // List Item
@@ -69,25 +76,33 @@ function updateDOM() {
     getSavedColumns();
   }
   // newTask column
-  newTaskList.textContent = '';
+  newTaskListEl.textContent = '';
   newTaskListArray.forEach((newTaskItem, index) => {
-    createItemEl(newTaskList, 0, newTaskItem, index);
+    createItemEl(newTaskListEl, 0, newTaskItem, index);
   });
+  newTaskListArray = filterArray(newTaskListArray);
+
   // Progress column
-  progressList.textContent = '';
+  progressListEl.textContent = '';
   progressListArray.forEach((progressItem, index) => {
-    createItemEl(progressList, 1, progressItem, index);
+    createItemEl(progressListEl, 1, progressItem, index);
   });
+  progressListArray = filterArray(progressListArray);
+
   // Complete column
-  completeList.textContent = '';
+  completeListEl.textContent = '';
   completeListArray.forEach((completeItem, index) => {
-    createItemEl(completeList, 2, completeItem, index);
+    createItemEl(completeListEl, 2, completeItem, index);
   });
+  completeListArray = filterArray(completeListArray);
+
   // On Hold column
-  onHoldList.textContent = '';
+  onHoldListEl.textContent = '';
   onHoldListArray.forEach((onHoldItem, index) => {
-    createItemEl(onHoldList, 3, onHoldItem, index);
+    createItemEl(onHoldListEl, 3, onHoldItem, index);
   });
+  onHoldListArray = filterArray(onHoldListArray);
+
   // Run getSavedColumns only once, update local storage
   updatedOnLoad = true;
   updateSavedColumns();
@@ -96,9 +111,15 @@ function updateDOM() {
 // Updated item - Delete or update value
 function updateItem(id, column) {
   const selectedArray = listArrays[column];
-  console.log(selectedArray);
   const selectedColumnEl = listColumns[column].children;
-  console.log(selectedColumnEl[id].textContent);
+  if (!dragging) {
+    if (!selectedColumnEl[id].textContent) {
+      delete selectedArray[id];
+    } else {
+      selectedArray[id] = selectedColumnEl[id].textContent;
+    }
+    updateDOM();
+  }
 }
 
 // Add new task to to column list and reset text box
@@ -127,28 +148,35 @@ function hideInputBox(column) {
 
 // Allow arrays to reflect dragged and dropped items
 function rebuildArrays() {
-  newTaskListArray = [];
-  for (let i = 0; i < newTaskList.children.length; i++) {
-    newTaskListArray.push(newTaskList.children[i].textContent);
-  }
-  progressListArray = [];
-  for (let i = 0; i < progressList.children.length; i++) {
-    progressListArray.push(progressList.children[i].textContent);
-  }
-  completeListArray = [];
-  for (let i = 0; i < completeList.children.length; i++) {
-    completeListArray.push(completeList.children[i].textContent);
-  }
-  onHoldListArray = [];
-  for (let i = 0; i < onHoldList.children.length; i++) {
-    onHoldListArray.push(onHoldList.children[i].textContent);
-  }
+  // newTaskListArray = [];
+  // for (let i = 0; i < newTaskList.children.length; i++) {
+  //   newTaskListArray.push(newTaskList.children[i].textContent);
+  // }
+  // progressListArray = [];
+  // for (let i = 0; i < progressList.children.length; i++) {
+  //   progressListArray.push(progressList.children[i].textContent);
+  // }
+  // completeListArray = [];
+  // for (let i = 0; i < completeList.children.length; i++) {
+  //   completeListArray.push(completeList.children[i].textContent);
+  // }
+  // onHoldListArray = [];
+  // for (let i = 0; i < onHoldList.children.length; i++) {
+  //   onHoldListArray.push(onHoldList.children[i].textContent);
+  // }
+  // Using Map function instead of For Loops above
+  // Use Array.from to convert the HTMLcollection into an array for map to work with
+  newTaskListArray = Array.from(newTaskListEl.children).map(i => i.textContent);
+  progressListArray = Array.from(progressListEl.children).map(i => i.textContent);
+  completeListArray = Array.from(completeListEl.children).map(i => i.textContent);
+  onHoldListArray = Array.from(onHoldListEl.children).map(i => i.textContent);
   updateDOM();
 }
 
 // When item starts dragging
 function drag(e) {
   draggedItem = e.target;
+  dragging = true;
 }
 
 // Column allows for item to drop
@@ -172,6 +200,8 @@ function drop(e) {
   // Add item into new column
   const parent = listColumns[currentColumn];
   parent.appendChild(draggedItem);
+  // Dragging complete
+  dragging = false;
   rebuildArrays();
 }
 
